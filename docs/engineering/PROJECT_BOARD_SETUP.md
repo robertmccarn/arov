@@ -177,10 +177,109 @@ GitHub project filters use these patterns:
 
 If the UI filter builder does not support OR between different fields, use the filter bar directly with the comma syntax.
 
-## CLI Limitations
+## GraphQL API Introspection Results
 
-The `gh` CLI (v2.92.0) cannot create, edit, or delete project views. All view configuration must be done through the GitHub web UI as documented above. The CLI can be used to:
+On 2026-05-14, the GitHub GraphQL API was introspected to confirm whether project view creation/editing is supported.
+
+### Mutations checked
+
+All mutation names were enumerated from the schema. No `createProjectV2View`, `updateProjectV2View`, or any view-related mutation for project boards exists. The only "view" mutations are for pull request reviews (e.g., `addPullRequestReview`, `submitPullRequestReview`).
+
+Full list of ProjectV2 mutations available:
+
+| Mutation | Purpose |
+|---|---|
+| `addProjectV2DraftIssue` | Add draft issue |
+| `addProjectV2ItemById` | Add existing issue/PR |
+| `archiveProjectV2Item` | Archive item |
+| `clearProjectV2ItemFieldValue` | Clear field value |
+| `convertProjectV2DraftIssueItemToIssue` | Convert draft to issue |
+| `copyProjectV2` | Copy project |
+| `createProjectV2` | Create project |
+| `createProjectV2Field` | Create field |
+| `createProjectV2IssueField` | Create issue field |
+| `createProjectV2StatusUpdate` | Create status update |
+| `deleteProjectV2` | Delete project |
+| `deleteProjectV2Field` | Delete field |
+| `deleteProjectV2Item` | Delete item |
+| `deleteProjectV2StatusUpdate` | Delete status update |
+| `deleteProjectV2Workflow` | Delete workflow |
+| `linkProjectV2ToRepository` | Link to repo |
+| `linkProjectV2ToTeam` | Link to team |
+| `markProjectV2AsTemplate` | Mark as template |
+| `unarchiveProjectV2Item` | Unarchive item |
+| `unlinkProjectV2FromRepository` | Unlink from repo |
+| `unlinkProjectV2FromTeam` | Unlink from team |
+| `unmarkProjectV2AsTemplate` | Unmark as template |
+| `updateProjectV2` | Update project title/description |
+| `updateProjectV2Collaborators` | Update collaborators |
+| `updateProjectV2DraftIssue` | Update draft issue |
+| `updateProjectV2Field` | Update field config |
+| `updateProjectV2ItemFieldValue` | Set field value on item |
+| `updateProjectV2ItemPosition` | Reorder items |
+| `updateProjectV2StatusUpdate` | Update status update |
+
+### ProjectV2View type (read-only)
+
+The `ProjectV2View` type exists in the schema but is **read-only** — there are no input types for creating or modifying views. Key fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | ID | View identifier |
+| `name` | String | View name |
+| `layout` | ProjectV2ViewLayout | BOARD_LAYOUT, TABLE_LAYOUT, or ROADMAP_LAYOUT |
+| `filter` | String | Filter string |
+| `groupByFields` | Connection | Fields used for grouping |
+| `sortByFields` | Connection | Fields used for sorting |
+
+### Existing project state (fetched via GraphQL)
+
+```
+Project ID: PVT_kwHOAzxw084BXvVQ
+Title: Arov V1 - Calm Command Center
+Number: 3
+```
+
+Fields with options:
+
+| Field | ID | Options |
+|---|---|---|
+| Status | `PVTSSF_lAHOAzxw084BXvVQzhS6Jwo` | Todo, In Progress, Done, Blocked, Review |
+| Priority | `PVTSSF_lAHOAzxw084BXvVQzhS6JyI` | P0, P1, P2, P3 |
+| Workstream | `PVTSSF_lAHOAzxw084BXvVQzhS6JyM` | Product Docs, Frontend, Backend, Database, UX Flow, Validation, DevOps |
+| MVP Fit | `PVTSSF_lAHOAzxw084BXvVQzhS6JyQ` | Core Loop, Support, Later, Out of Scope |
+
+Existing views before configuration: 1 view ("View 1", TABLE_LAYOUT, no filter, no grouping).
+
+### Commands used for introspection
+
+```bash
+# Check auth
+gh auth status
+
+# Enumerate all mutations
+gh api graphql -f query='{ __schema { mutationType { fields { name args { name type { kind name } } } } } }'
+
+# Introspect ProjectV2View type
+gh api graphql -f query='{ __type(name: "ProjectV2View") { name kind fields { name type { kind name } } } }'
+
+# Fetch project fields and views
+gh api graphql -f query='query { user(login: "robertmccarn") { projectV2(number: 3) { id title fields(first: 50) { nodes { ... on ProjectV2Field { id name dataType } ... on ProjectV2SingleSelectField { id name dataType options { id name } } } } views(first: 50) { nodes { id name layout number filter groupByFields(first: 10) { nodes { ... on ProjectV2Field { id name } ... on ProjectV2SingleSelectField { id name } } } } } } } }'
+
+# Check ProjectV2ViewLayout enum
+gh api graphql -f query='{ __type(name: "ProjectV2ViewLayout") { enumValues { name } } }'
+```
+
+### Conclusion
+
+**GitHub's GraphQL API and REST API do not support creating or modifying project views.** All view configuration must be done through the GitHub web UI. The `gh` CLI can be used for all other project operations (item CRUD, field value updates, field management).
+
+## CLI Capabilities
+
+The `gh` CLI (v2.92.0) can:
 - Add issues to the project
 - Set field values (Status, Priority, Workstream, MVP Fit)
 - List project items and fields
-- Add field options (e.g., adding Blocked and Review to the Status field was done via the GraphQL API)
+- Add field options via GraphQL
+- Copy projects
+- Cannot create, edit, or delete views
