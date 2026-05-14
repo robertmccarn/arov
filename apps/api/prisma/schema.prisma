@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +8,89 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum ActionCategory {
+  STABILIZE
+  BUILD
+  RESTORE
+}
+
+enum ActionStatus {
+  INBOX
+  ACTIVE
+  PAUSED
+  DONE
+  ARCHIVED
+}
+
+enum EffortLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ImpactLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum CapacityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  RECOVERY
+}
+
+enum DayMode {
+  STABILIZE
+  BUILD
+  RESTORE
+  MIXED
+}
+
+model ActionItem {
+  id                String         @id @default(cuid())
+  title             String
+  description       String?
+  category          ActionCategory @default(STABILIZE)
+  supportsStability Boolean        @default(false)
+  effort            EffortLevel    @default(MEDIUM)
+  impact            ImpactLevel    @default(MEDIUM)
+  urgency           UrgencyLevel   @default(MEDIUM)
+  status            ActionStatus   @default(INBOX)
+  dueDate           DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  completedAt       DateTime?
+
+  reflections       Reflection[]
+}
+
+model CapacityCheckIn {
+  id            String        @id @default(cuid())
+  energy        CapacityLevel
+  stress        CapacityLevel
+  availableTime Int?
+  mode          DayMode       @default(MIXED)
+  notes         String?
+  createdAt     DateTime      @default(now())
+}
+
+model Reflection {
+  id              String      @id @default(cuid())
+  actionItemId    String?
+  actionItem      ActionItem? @relation(fields: [actionItemId], references: [id])
+  stressReduced   Boolean?
+  momentumCreated Boolean?
+  actualEffort    EffortLevel?
+  notes           String?
+  createdAt       DateTime    @default(now())
 }
