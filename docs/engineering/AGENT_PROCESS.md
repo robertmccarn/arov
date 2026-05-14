@@ -481,7 +481,22 @@ The GitHub project board has seven configured views. See `docs/engineering/PROJE
 - Board maintenance rules
 - Status field options
 
-All view creation must be done through the GitHub web UI — the `gh` CLI does not support creating or editing project views.
+All visual view creation must be done through the GitHub web UI — the `gh` CLI does not support creating or editing project views.
+
+## Scripted Board Views
+
+Arov does not require manual GitHub Project view setup. Use `scripts/board-view.sh` to inspect work from the terminal. See `docs/engineering/BOARD_COMMANDS.md` for full usage.
+
+```bash
+./scripts/board-view.sh all       # all items with fields
+./scripts/board-view.sh kanban    # grouped by Status
+./scripts/board-view.sh mvp       # P0/P1 items only
+./scripts/board-view.sh workstreams  # grouped by Workstream
+./scripts/board-view.sh blocked   # blocked items only
+./scripts/board-view.sh review    # review items only
+./scripts/board-view.sh priority  # grouped by Priority
+./scripts/board-view.sh deployment  # DevOps/Support items
+```
 
 ## Future Agent Startup Checklist
 
