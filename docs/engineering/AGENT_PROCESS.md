@@ -73,11 +73,10 @@ The process is:
 
 ## Board Statuses
 
-Use these statuses:
+Use these statuses (matches the GitHub project Status field):
 
 ```text
-Backlog
-Ready
+Todo
 In Progress
 Blocked
 Review
@@ -88,8 +87,7 @@ Definitions:
 
 | Status      | Meaning                                                           |
 | ----------- | ----------------------------------------------------------------- |
-| Backlog     | Captured idea, not yet ready for work                             |
-| Ready       | Clearly scoped and ready to implement                             |
+| Todo        | Captured and scoped, not yet started                              |
 | In Progress | Actively being worked                                             |
 | Blocked     | Waiting on a decision, dependency, setup, or design clarification |
 | Review      | Needs testing, code review, or manual validation                  |
@@ -459,6 +457,7 @@ docs/product/vision.md
 docs/product/mvp-spec.md
 docs/engineering/architecture.md
 docs/engineering/AGENT_PROCESS.md
+docs/engineering/PROJECT_BOARD_SETUP.md
 ```
 
 ## Scope Control Rule
@@ -473,6 +472,16 @@ check in → capture actions → choose one next step → complete → reflect
 If yes, proceed.
 
 If no, defer unless the user explicitly approves scope expansion.
+
+## Project Board Views
+
+The GitHub project board has seven configured views. See `docs/engineering/PROJECT_BOARD_SETUP.md` for:
+- View names, layouts, filters, and grouping
+- Step-by-step manual setup instructions
+- Board maintenance rules
+- Status field options
+
+All view creation must be done through the GitHub web UI — the `gh` CLI does not support creating or editing project views.
 
 ## Future Agent Startup Checklist
 
