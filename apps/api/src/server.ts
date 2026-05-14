@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import actionItemsRouter from "./routes/actionItems.js";
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ app.get("/health", (_req, res) => {
     service: "arov-api",
   });
 });
+
+app.use("/action-items", actionItemsRouter);
 
 app.listen(port, () => {
   console.log(`Arov API listening on port ${port}`);
