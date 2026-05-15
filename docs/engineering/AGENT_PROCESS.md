@@ -426,7 +426,9 @@ git ls-files | grep node_modules
 
 # API
 cd apps/api
-npm run dev
+npm run test          # Fast automated route tests (no server needed)
+npm run validate      # Tests + Prisma schema validation
+npm run dev           # Start server for manual smoke tests
 curl http://localhost:4000/health
 
 # Prisma
@@ -437,6 +439,16 @@ npx prisma migrate status
 cd apps/web
 npm run dev
 ```
+
+## Validation Methodology
+
+Use a three-tier approach:
+
+1. **Automated route tests** — `npm run test` runs Vitest + Supertest against the Express app directly (no server needed). Fast and repeatable.
+2. **Schema validation** — `npx prisma validate` checks the Prisma schema.
+3. **Manual curl smoke test** — Only for final checkpoints or debugging failures.
+
+Prefer `npm run validate` over repeatedly starting and killing the dev server. See `docs/engineering/VALIDATION.md` for full details.
 
 ## Documentation Update Rules
 
