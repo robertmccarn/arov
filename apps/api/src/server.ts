@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import actionItemsRouter from "./routes/actionItems.js";
+import capacityCheckInsRouter from "./routes/capacityCheckIns.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/action-items", actionItemsRouter);
+app.use("/capacity-check-ins", capacityCheckInsRouter);
 
 app.listen(port, () => {
   console.log(`Arov API listening on port ${port}`);
