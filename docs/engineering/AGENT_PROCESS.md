@@ -498,6 +498,24 @@ Arov does not require manual GitHub Project view setup. Use `scripts/board-view.
 ./scripts/board-view.sh deployment  # DevOps/Support items
 ```
 
+## Project Board Automation
+
+Use `scripts/board-view.sh` to inspect the board and `scripts/board-sync.sh` to update issue fields/statuses. Do not rely on manual GitHub UI updates for day-to-day operations.
+
+| Action | Command |
+|---|---|
+| View all items | `./scripts/board-view.sh all` |
+| View kanban | `./scripts/board-view.sh kanban` |
+| View MVP scope | `./scripts/board-view.sh mvp` |
+| View blocked | `./scripts/board-view.sh blocked` |
+| Start issue | `./scripts/board-sync.sh start <n>` |
+| Complete issue | `./scripts/board-sync.sh done <n>` |
+| Set field | `./scripts/board-sync.sh set-status <n> <val>` |
+| Bootstrap core | `./scripts/board-sync.sh bootstrap-core` |
+| Validate board | `./scripts/board-sync.sh validate` |
+
+See `docs/engineering/BOARD_SYNC.md` for full usage.
+
 ## Future Agent Startup Checklist
 
 When starting work on Arov, do this first:
